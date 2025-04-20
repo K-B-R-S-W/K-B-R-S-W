@@ -117,8 +117,9 @@ def create_animated_glow_stick_dance(output_path):
                          stroke=color, stroke_width=size/10,
                          filter=f"url(#glow_{color_code})")
         
-        # Add animation to body
+        # Add animation to body - FIXED: Added transform parameter
         body_anim = dwg.animateTransform(
+            transform="rotate",  # Add this line to fix the error
             attributeName="transform",
             type="rotate",
             values=f"0 {x} {y+head_radius}; 10 {x} {y+head_radius}; 0 {x} {y+head_radius}; -5 {x} {y+head_radius}; 0 {x} {y+head_radius}",
@@ -243,8 +244,8 @@ def create_animated_glow_stick_dance(output_path):
         
         return figure
     
-    # Create multiple dancing figures
-    num_figures = 5
+    # Create 2 dancing figures (changed from 5 to 2)
+    num_figures = 2
     
     for i in range(num_figures):
         # Distribute figures evenly
