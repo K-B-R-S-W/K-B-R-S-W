@@ -68,70 +68,133 @@ def get_contributions():
     
     return contributions
 
-def create_animated_racetrack(contributions, output_path):
-    """Create an animated race track SVG with car based on contribution data"""
+def create_racetrack(contributions, output_path):
+    """Create a race track SVG with car based on contribution data"""
     # Determine the dimensions
     width = 1000
     height = 400
     
-    # Calculate contribution stats
+    # Create SVG
+    dwg = svgwrite.Drawing(output_path, size=(width, height), profile='full')
+    
+    # Create background
+    dwg.add(dwg.rect(insert=(0, 0), size=(width, height), fill='#0d1117'))
+    
+    # Draw race track (oval shape)
+    track_x = 100
+    track_y = 100
+    track_width = width - 200
+    track_height = height - 200
+    
+    # Track outline - asphalt color
+    dwg.add(dwg.ellipse(center=(width/2, height/2), 
+                        r=(track_width/2, track_height/2),
+                        fill='#333333'))
+    
+    # Inner track - grass field
+    dwg.add(dwg.ellipse(center=(width/2, height/2), 
+                        r=(track_width/2 - 40, track_height/2 - 40),
+                        fill='#264026'))
+    
+    # Lane markers on track
+    # Calculate contribution heat levels for color intensity
+    max_contributions = max(contrib['count'] for contrib in contributions) if contributions else 1
+    
+    # Get dates for last 52 weeks (364 days)
     recent_contributions = contributions[-364:] if len(contributions) > 364 else contributions
-    total_contribs = sum(c['count'] for c in recent_contributions)
     
-    # Create SVG manually (bypassing svgwrite's animation limitations)
-    # Start with the SVG header
-    svg_content = f'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <rect x="0" y="0" width="{width}" height="{height}" fill="#0d1117"/>
+    # Create checkpoints around the track
+    total_points = len(recent_contributions)
     
-    <!-- Track outline -->
-    <ellipse cx="{width/2}" cy="{height/2}" rx="{(width-200)/2}" ry="{(height-200)/2}" fill="#333333"/>
-    
-    <!-- Inner track -->
-    <ellipse cx="{width/2}" cy="{height/2}" rx="{(width-200)/2 - 40}" ry="{(height-200)/2 - 40}" fill="#264026"/>
-    
-    <!-- Start/finish line -->
-    <line x1="{width/2 + (width-200)/2 - 35}" y1="{height/2 - 10}" x2="{width/2 + (width-200)/2 - 5}" y2="{height/2 + 10}" stroke="#ffffff" stroke-width="3"/>
-    <line x1="{width/2 + (width-200)/2 - 5}" y1="{height/2 - 10}" x2="{width/2 + (width-200)/2 - 35}" y2="{height/2 + 10}" stroke="#ffffff" stroke-width="3"/>
-    
-    <!-- Path for car to follow (invisible) -->
-    <path id="carPath" d="M {width/2 + (width-200)/2 - 20} {height/2} 
-                A {(width-200)/2 - 20} {(height-200)/2 - 20} 0 1 1 {width/2 - (width-200)/2 + 20} {height/2}
-                A {(width-200)/2 - 20} {(height-200)/2 - 20} 0 1 1 {width/2 + (width-200)/2 - 20} {height/2}"
-          fill="none" stroke="none"/>
-    
-    <!-- Race car -->
-    <g id="raceCar">
-        <!-- Car body -->
-        <rect x="-12" y="-6" width="24" height="12" rx="3" fill="#ff3300"/>
-        <!-- Wheels -->
-        <rect x="-10" y="-8" width="4" height="4" fill="#111111"/>
-        <rect x="6" y="-8" width="4" height="4" fill="#111111"/>
-        <rect x="-10" y="4" width="4" height="4" fill="#111111"/>
-        <rect x="6" y="4" width="4" height="4" fill="#111111"/>
-        <!-- Windshield -->
-        <polygon points="0,-6 6,-3 6,3 0,6" fill="#66ccff"/>
+    # Car SVG path (simple race car shape)
+    def car_path(x, y, size=10, direction=0):
+        """Create an SVG path for a race car at the given position and direction"""
+        # Car body
+        car = dwg.g()
         
-        <!-- Animation -->
-        <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
-            <mpath xlink:href="#carPath"/>
-        </animateMotion>
-    </g>
+        # Rotate the car based on direction (in radians)
+        car.rotate(direction * 180 / np.pi, center=(x, y))
+        
+        # Car body - adjust colors based on contribution level
+        car.add(dwg.rect((x-size, y-size/2), (size*2, size), rx=3, fill='#ff3300'))
+        
+        # Wheels
+        wheel_size = size/3
+        car.add(dwg.rect((x-size+wheel_size/2, y-size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+        car.add(dwg.rect((x+size-wheel_size*1.5, y-size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+        car.add(dwg.rect((x-size+wheel_size/2, y+size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+        car.add(dwg.rect((x+size-wheel_size*1.5, y+size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+        
+        # Windshield
+        car.add(dwg.polygon(points=[(x, y-size/2), (x+size/2, y-size/4), (x+size/2, y+size/4), (x, y+size/2)], fill='#66ccff'))
+        
+        return car
     
-    <!-- Stats text -->
-    <text x="{width/2}" y="{height-40}" fill="#ffffff" font-size="14px" text-anchor="middle">Total Contributions: {total_contribs}</text>
+    # Create race track checkpoints and place car
+    track_points = []
+    for i in range(total_points):
+        angle = 2 * np.pi * i / total_points
+        
+        # Elliptical coordinates
+        x = width/2 + (track_width/2 - 20) * np.cos(angle)
+        y = height/2 + (track_height/2 - 20) * np.sin(angle)
+        
+        # Store track points
+        track_points.append((x, y, angle))
     
-    <!-- Watermark -->
-    <text x="{width/2}" y="30" fill="#ffffff" font-size="18px" font-weight="bold" text-anchor="middle">@{GITHUB_USERNAME}'s Racing Contributions</text>
+    # Draw car positions with "ghost" trail effect
+    # Focus on more recent contributions for more prominent display
+    display_contribs = recent_contributions[-30:]  # Last 30 days
     
-    <!-- Generation date -->
-    <text x="{width-20}" y="{height-20}" fill="#aaaaaa" font-size="10px" text-anchor="end">Generated: {datetime.now().strftime("%Y-%m-%d")}</text>
-</svg>'''
+    for i, contrib in enumerate(display_contribs):
+        point_index = (len(track_points) - len(display_contribs) + i) % len(track_points)
+        x, y, angle = track_points[point_index]
+        
+        # Scale car size by contribution
+        car_size = 6 + (contrib['count'] * 2 if contrib['count'] < 5 else 10)
+        
+        # Opacity based on recency (more recent = more opaque)
+        opacity = 0.3 + (i / len(display_contribs)) * 0.7
+        
+        # Create car with current position
+        if i == len(display_contribs) - 1:  # Most recent contribution = main car
+            car = car_path(x, y, car_size, angle + np.pi/2)
+            dwg.add(car)
+        else:  # Ghost trail
+            ghost_car = car_path(x, y, car_size * 0.8, angle + np.pi/2)
+            ghost_car.attribs['opacity'] = str(opacity * 0.5)
+            dwg.add(ghost_car)
     
-    # Write the SVG file
-    with open(output_path, 'w') as f:
-        f.write(svg_content)
-
+    # Add start/finish line
+    finish_x = width/2 + (track_width/2 - 20)
+    finish_y = height/2
+    dwg.add(dwg.line((finish_x-15, finish_y-10), (finish_x+15, finish_y+10), stroke='#ffffff', stroke_width=3))
+    dwg.add(dwg.line((finish_x+15, finish_y-10), (finish_x-15, finish_y+10), stroke='#ffffff', stroke_width=3))
+    
+    # Add contribution stats
+    stats_text = f"Total Contributions: {sum(c['count'] for c in recent_contributions)}"
+    dwg.add(dwg.text(stats_text, insert=(width/2, height-40), 
+                     fill='#ffffff', font_size='14px', 
+                     text_anchor='middle'))
+    
+    # Add watermark with username
+    dwg.add(dwg.text(f"@{GITHUB_USERNAME}'s Racing Contributions", 
+                    insert=(width/2, 30), 
+                    fill='#ffffff', 
+                    font_size='18px', 
+                    font_weight='bold',
+                    text_anchor='middle'))
+    
+    # Add current date
+    today = datetime.now().strftime("%Y-%m-%d")
+    dwg.add(dwg.text(f"Generated: {today}", 
+                    insert=(width-20, height-20), 
+                    fill='#aaaaaa', 
+                    font_size='10px',
+                    text_anchor='end'))
+    
+    # Save the drawing
+    dwg.save()
 
 def create_dark_mode_version(input_path, output_path):
     """Create a dark mode version of the SVG"""
@@ -147,21 +210,21 @@ def create_dark_mode_version(input_path, output_path):
         f.write(dark_mode_svg)
 
 def main():
-    """Main function to generate animated race car"""
-    print(f"Generating animated race car for GitHub user: {GITHUB_USERNAME}")
+    """Main function to generate race car animation"""
+    print(f"Generating race car animation for GitHub user: {GITHUB_USERNAME}")
     
     # Get contribution data
     contributions = get_contributions()
     
-    # Create animated race track SVG
+    # Create race track SVG
     svg_path = os.path.join(OUTPUT_DIR, 'github-race-car.svg')
-    create_animated_racetrack(contributions, svg_path)
+    create_racetrack(contributions, svg_path)
     
     # Create dark mode version
     dark_svg_path = os.path.join(OUTPUT_DIR, 'github-race-car-dark.svg')
     create_dark_mode_version(svg_path, dark_svg_path)
     
-    print(f"Generated animated race car at {OUTPUT_DIR}")
+    print(f"Generated race car animations at {OUTPUT_DIR}")
 
 if __name__ == "__main__":
     main()
