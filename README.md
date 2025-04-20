@@ -11,9 +11,9 @@
 
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/K-B-R-S-W/K-B-R-S-W/output/github-race-car-dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/K-B-R-S-W/K-B-R-S-W/output/github-race-car.svg" />
-  <img alt="github-race-car" src="https://raw.githubusercontent.com/K-B-R-S-W/K-B-R-S-W/output/github-race-car.svg" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/K-B-R-S-W/K-B-R-S-W/output/github-glow-dance.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/K-B-R-S-W/K-B-R-S-W/output/github-glow-dance-light.svg" />
+  <img alt="github-glow-dance" src="https://raw.githubusercontent.com/K-B-R-S-W/K-B-R-S-W/output/github-glow-dance.svg" />
 </picture>
 
 
