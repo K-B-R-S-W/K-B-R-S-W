@@ -5,8 +5,6 @@ import requests
 import numpy as np
 import svgwrite
 from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
 import random
 
 # Configuration
@@ -24,7 +22,7 @@ def get_contributions():
     if GITHUB_TOKEN:
         headers['Authorization'] = f'token {GITHUB_TOKEN}'
     
-    # Use GitHub GraphQL API to fetch contribution data
+    # Use GitHub GraphQL API to fetch contribution data - kept for workflow compatibility
     query = """
     query($username: String!) {
       user(login: $username) {
@@ -68,34 +66,37 @@ def get_contributions():
     
     return contributions
 
-def create_glow_stick_dance(contributions, output_path):
-    """Create a glow stick dance SVG based on contribution data"""
+def create_animated_glow_stick_dance(output_path):
+    """Create an animated glow stick dance SVG with continuous dabbing motion"""
     # Determine the dimensions
     width = 1000
     height = 400
     
-    # Create SVG
+    # Create SVG with namespace for animations
     dwg = svgwrite.Drawing(output_path, size=(width, height), profile='full')
+    
+    # Add SVG animation namespace
+    dwg.attribs['xmlns:xlink'] = 'http://www.w3.org/1999/xlink'
     
     # Create background (black for glow stick effect)
     dwg.add(dwg.rect(insert=(0, 0), size=(width, height), fill='#000000'))
     
-    # Get dates for last 30 days
-    recent_contributions = contributions[-30:] if len(contributions) > 30 else contributions
+    # Define glow filters
+    glow_colors = ['#00FFFF', '#00FF00', '#FF00FF', '#0099FF', '#FFFF00']
     
-    # Calculate max contributions for scaling
-    max_contributions = max(contrib['count'] for contrib in contributions) if contributions else 1
-    
-    # Function to create a glow stick figure
-    def create_glow_figure(x, y, size, color, dab_phase):
-        """Create a glowing stick figure with dab pose based on phase"""
-        figure = dwg.g()
-        
-        # Add glow effect
-        filter_id = f"glow_{color.replace('#', '')}"
+    for color in glow_colors:
+        color_code = color.replace('#', '')
+        filter_id = f"glow_{color_code}"
         glow_filter = dwg.defs.add(dwg.filter(id=filter_id))
         glow_filter.feGaussianBlur(in_="SourceGraphic", stdDeviation="3")
         glow_filter.feComposite(in2="SourceGraphic", operator="over")
+    
+    # Function to create animated glow stick figure
+    def create_animated_dab_figure(x, y, size, color, delay):
+        """Create a glowing stick figure with animated dab movements"""
+        color_code = color.replace('#', '')
+        group_id = f"figure_{color_code}_{int(x)}_{int(y)}"
+        figure = dwg.g(id=group_id)
         
         # Stick figure dimensions
         head_radius = size * 0.2
@@ -104,106 +105,145 @@ def create_glow_stick_dance(contributions, output_path):
         
         # Head
         head = dwg.circle(center=(x, y), r=head_radius, fill="none", 
-                        stroke=color, stroke_width=size/10)
-        head.attribs["filter"] = f"url(#{filter_id})"
+                          stroke=color, stroke_width=size/10,
+                          filter=f"url(#glow_{color_code})")
         figure.add(head)
         
-        # Different poses based on dab_phase (0-1)
-        if dab_phase < 0.5:  # Preparing for dab
-            dab_progress = dab_phase * 2  # 0 to 1
-            
-            # Body (vertical line)
-            body = dwg.line(start=(x, y + head_radius), 
-                          end=(x, y + head_radius + body_length),
-                          stroke=color, stroke_width=size/10)
-            body.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(body)
-            
-            # Left arm (going up as dab progresses)
-            left_arm_angle = -np.pi/4 - (np.pi/4 * dab_progress)  # Moving upward
-            left_arm_x = x + limb_length * np.cos(left_arm_angle)
-            left_arm_y = y + head_radius + limb_length * np.sin(left_arm_angle)
-            left_arm = dwg.line(start=(x, y + head_radius + size * 0.15),
-                              end=(left_arm_x, left_arm_y),
-                              stroke=color, stroke_width=size/10)
-            left_arm.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(left_arm)
-            
-            # Right arm (going down and across as dab progresses)
-            right_arm_angle = np.pi/4 + (np.pi/4 * dab_progress)  # Moving across body
-            right_arm_x = x + limb_length * np.cos(right_arm_angle)
-            right_arm_y = y + head_radius + limb_length * np.sin(right_arm_angle)
-            right_arm = dwg.line(start=(x, y + head_radius + size * 0.15),
-                               end=(right_arm_x, right_arm_y),
-                               stroke=color, stroke_width=size/10)
-            right_arm.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(right_arm)
-            
-            # Left leg
-            left_leg = dwg.line(start=(x, y + head_radius + body_length),
-                              end=(x - limb_length * 0.7, y + head_radius + body_length + limb_length),
-                              stroke=color, stroke_width=size/10)
-            left_leg.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(left_leg)
-            
-            # Right leg
-            right_leg = dwg.line(start=(x, y + head_radius + body_length),
-                               end=(x + limb_length * 0.7, y + head_radius + body_length + limb_length),
-                               stroke=color, stroke_width=size/10)
-            right_leg.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(right_leg)
-            
-        else:  # Full dab
-            dab_progress = (dab_phase - 0.5) * 2  # 0 to 1 (for oscillation)
-            
-            # For dab pose, tilt the body slightly
-            body_angle = np.pi/12 * np.sin(dab_progress * np.pi)  # Small tilt
-            body_end_x = x + body_length * np.sin(body_angle)
-            body_end_y = y + head_radius + body_length * np.cos(body_angle)
-            
-            body = dwg.line(start=(x, y + head_radius),
-                          end=(body_end_x, body_end_y),
-                          stroke=color, stroke_width=size/10)
-            body.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(body)
-            
-            # Dab position - one arm up across face, one arm out to side
-            # Head slightly tucked into raised arm
-            
-            # Left arm (down to side in dab)
-            left_arm = dwg.line(start=(x, y + head_radius + size * 0.15),
-                              end=(x - limb_length * 0.8, y + head_radius + limb_length * 0.8),
-                              stroke=color, stroke_width=size/10)
-            left_arm.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(left_arm)
-            
-            # Right arm (up across face in dab)
-            right_arm = dwg.line(start=(x, y + head_radius + size * 0.15),
-                               end=(x + limb_length * 0.5, y - limb_length * 0.5),
-                               stroke=color, stroke_width=size/10)
-            right_arm.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(right_arm)
-            
-            # Left leg
-            left_leg = dwg.line(start=(body_end_x, body_end_y),
-                              end=(body_end_x - limb_length * 0.7, body_end_y + limb_length),
-                              stroke=color, stroke_width=size/10)
-            left_leg.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(left_leg)
-            
-            # Right leg
-            right_leg = dwg.line(start=(body_end_x, body_end_y),
-                               end=(body_end_x + limb_length * 0.7, body_end_y + limb_length),
-                               stroke=color, stroke_width=size/10)
-            right_leg.attribs["filter"] = f"url(#{filter_id})"
-            figure.add(right_leg)
+        # Create animation paths for different body parts
+        
+        # Body
+        body = dwg.line(start=(x, y + head_radius), 
+                         end=(x, y + head_radius + body_length),
+                         stroke=color, stroke_width=size/10,
+                         filter=f"url(#glow_{color_code})")
+        
+        # Add animation to body
+        body_anim = dwg.animateTransform(
+            attributeName="transform",
+            type="rotate",
+            values=f"0 {x} {y+head_radius}; 10 {x} {y+head_radius}; 0 {x} {y+head_radius}; -5 {x} {y+head_radius}; 0 {x} {y+head_radius}",
+            dur="3s",
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        body.add(body_anim)
+        figure.add(body)
+        
+        # Left arm
+        left_arm = dwg.line(start=(x, y + head_radius + size * 0.15),
+                           end=(x - limb_length * 0.7, y + head_radius + limb_length * 0.5),
+                           stroke=color, stroke_width=size/10,
+                           filter=f"url(#glow_{color_code})")
+        
+        # Left arm animation - for dabbing motion
+        left_arm_anim = dwg.animate(
+            attributeName="d",
+            values=(
+                f"M{x},{y + head_radius + size * 0.15} "
+                f"L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}; "
+                
+                f"M{x},{y + head_radius + size * 0.15} "
+                f"L{x - limb_length * 0.8},{y + head_radius + limb_length * 0.8}; "
+                
+                f"M{x},{y + head_radius + size * 0.15} "
+                f"L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}"
+            ),
+            dur="3s",
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        
+        # Convert line to path for animation
+        left_arm_path = dwg.path(
+            d=f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}",
+            stroke=color, stroke_width=size/10,
+            filter=f"url(#glow_{color_code})"
+        )
+        
+        left_arm_path.add(left_arm_anim)
+        figure.add(left_arm_path)
+        
+        # Right arm
+        # For the dabbing position, we'll animate this to go up to the head
+        right_arm_path = dwg.path(
+            d=f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}",
+            stroke=color, stroke_width=size/10,
+            filter=f"url(#glow_{color_code})"
+        )
+        
+        # Right arm animation - dab motion
+        right_arm_anim = dwg.animate(
+            attributeName="d",
+            values=(
+                # Regular position
+                f"M{x},{y + head_radius + size * 0.15} "
+                f"L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}; "
+                
+                # Dab position - arm across face
+                f"M{x},{y + head_radius + size * 0.15} "
+                f"L{x + limb_length * 0.5},{y - limb_length * 0.5}; "
+                
+                # Back to slightly different position
+                f"M{x},{y + head_radius + size * 0.15} "
+                f"L{x + limb_length * 0.6},{y + head_radius - limb_length * 0.1}; "
+                
+                # Regular position again
+                f"M{x},{y + head_radius + size * 0.15} "
+                f"L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}"
+            ),
+            dur="3s",
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        
+        right_arm_path.add(right_arm_anim)
+        figure.add(right_arm_path)
+        
+        # Left leg
+        left_leg = dwg.line(start=(x, y + head_radius + body_length),
+                          end=(x - limb_length * 0.7, y + head_radius + body_length + limb_length),
+                          stroke=color, stroke_width=size/10,
+                          filter=f"url(#glow_{color_code})")
+        
+        # Add small animation to left leg for bounce effect
+        left_leg_anim = dwg.animate(
+            attributeName="y2",
+            values=(
+                f"{y + head_radius + body_length + limb_length}; "
+                f"{y + head_radius + body_length + limb_length - 5}; "
+                f"{y + head_radius + body_length + limb_length}"
+            ),
+            dur="3s",
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        left_leg.add(left_leg_anim)
+        figure.add(left_leg)
+        
+        # Right leg
+        right_leg = dwg.line(start=(x, y + head_radius + body_length),
+                           end=(x + limb_length * 0.7, y + head_radius + body_length + limb_length),
+                           stroke=color, stroke_width=size/10,
+                           filter=f"url(#glow_{color_code})")
+        
+        # Add small animation to right leg for bounce effect
+        right_leg_anim = dwg.animate(
+            attributeName="y2",
+            values=(
+                f"{y + head_radius + body_length + limb_length}; "
+                f"{y + head_radius + body_length + limb_length - 10}; "
+                f"{y + head_radius + body_length + limb_length}"
+            ),
+            dur="3s",
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        right_leg.add(right_leg_anim)
+        figure.add(right_leg)
         
         return figure
     
-    # Create multiple dancing figures based on contribution data
-    glow_colors = ['#00FFFF', '#00FF00', '#FF00FF', '#0099FF', '#FFFF00']
-    
-    # Fixed number of figures
+    # Create multiple dancing figures
     num_figures = 5
     
     for i in range(num_figures):
@@ -211,15 +251,15 @@ def create_glow_stick_dance(contributions, output_path):
         x_pos = width * (i + 1) / (num_figures + 1)
         y_pos = height / 2.5
         
-        # Fixed size for all figures
+        # Size for figures
         figure_size = 80
         
-        # Different phase for each figure
-        dab_phase = (i / num_figures + 0.2) % 1.0
+        # Different animation delay for each figure to create varied motion
+        delay = i * 0.5
         
         # Create figure with random glow color
         color = random.choice(glow_colors)
-        figure = create_glow_figure(x_pos, y_pos, figure_size, color, dab_phase)
+        figure = create_animated_dab_figure(x_pos, y_pos, figure_size, color, delay)
         dwg.add(figure)
     
     # Save the drawing
@@ -237,21 +277,21 @@ def create_light_mode_version(input_path, output_path):
         f.write(light_mode_svg)
 
 def main():
-    """Main function to generate glow stick dance animation"""
-    print(f"Generating glow stick dance animation")
+    """Main function to generate animated glow stick dance"""
+    print("Generating animated glow stick dab dance")
     
-    # Get contribution data (still needed to initialize but not displayed)
-    contributions = get_contributions()
+    # Get contribution data (for workflow compatibility only)
+    get_contributions()
     
-    # Create glow stick dance SVG
+    # Create animated glow stick dance SVG
     svg_path = os.path.join(OUTPUT_DIR, 'github-glow-dance.svg')
-    create_glow_stick_dance(contributions, svg_path)
+    create_animated_glow_stick_dance(svg_path)
     
     # Create light mode version (same as dark for glow effect)
     light_svg_path = os.path.join(OUTPUT_DIR, 'github-glow-dance-light.svg')
     create_light_mode_version(svg_path, light_svg_path)
     
-    print(f"Generated glow stick dance animations at {OUTPUT_DIR}")
+    print(f"Generated animated glow stick dance at {OUTPUT_DIR}")
 
 if __name__ == "__main__":
     main()
