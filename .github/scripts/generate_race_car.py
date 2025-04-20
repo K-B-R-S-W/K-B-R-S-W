@@ -68,14 +68,17 @@ def get_contributions():
     
     return contributions
 
-def create_racetrack(contributions, output_path):
-    """Create a race track SVG with car based on contribution data"""
+def create_animated_racetrack(contributions, output_path):
+    """Create an animated race track SVG with car based on contribution data"""
     # Determine the dimensions
     width = 1000
     height = 400
     
-    # Create SVG
+    # Create SVG with animation support
     dwg = svgwrite.Drawing(output_path, size=(width, height), profile='full')
+    
+    # Add SVG namespace for SMIL animations
+    dwg.attribs['xmlns:xlink'] = "http://www.w3.org/1999/xlink"
     
     # Create background
     dwg.add(dwg.rect(insert=(0, 0), size=(width, height), fill='#0d1117'))
@@ -96,7 +99,6 @@ def create_racetrack(contributions, output_path):
                         r=(track_width/2 - 40, track_height/2 - 40),
                         fill='#264026'))
     
-    # Lane markers on track
     # Calculate contribution heat levels for color intensity
     max_contributions = max(contrib['count'] for contrib in contributions) if contributions else 1
     
@@ -106,64 +108,64 @@ def create_racetrack(contributions, output_path):
     # Create checkpoints around the track
     total_points = len(recent_contributions)
     
-    # Car SVG path (simple race car shape)
-    def car_path(x, y, size=10, direction=0):
-        """Create an SVG path for a race car at the given position and direction"""
-        # Car body
-        car = dwg.g()
-        
-        # Rotate the car based on direction (in radians)
-        car.rotate(direction * 180 / np.pi, center=(x, y))
-        
-        # Car body - adjust colors based on contribution level
-        car.add(dwg.rect((x-size, y-size/2), (size*2, size), rx=3, fill='#ff3300'))
-        
-        # Wheels
-        wheel_size = size/3
-        car.add(dwg.rect((x-size+wheel_size/2, y-size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
-        car.add(dwg.rect((x+size-wheel_size*1.5, y-size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
-        car.add(dwg.rect((x-size+wheel_size/2, y+size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
-        car.add(dwg.rect((x+size-wheel_size*1.5, y+size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
-        
-        # Windshield
-        car.add(dwg.polygon(points=[(x, y-size/2), (x+size/2, y-size/4), (x+size/2, y+size/4), (x, y+size/2)], fill='#66ccff'))
-        
-        return car
+    # Car SVG path (race car shape)
+    car_size = 10
     
-    # Create race track checkpoints and place car
-    track_points = []
-    for i in range(total_points):
-        angle = 2 * np.pi * i / total_points
-        
-        # Elliptical coordinates
-        x = width/2 + (track_width/2 - 20) * np.cos(angle)
-        y = height/2 + (track_height/2 - 20) * np.sin(angle)
-        
-        # Store track points
-        track_points.append((x, y, angle))
+    # Create a group for the car that will be animated
+    car_group = dwg.g(id="race-car")
     
-    # Draw car positions with "ghost" trail effect
-    # Focus on more recent contributions for more prominent display
-    display_contribs = recent_contributions[-30:]  # Last 30 days
+    # Car body - adjust colors based on contribution level
+    car_body = dwg.rect((-car_size, -car_size/2), (car_size*2, car_size), rx=3, fill='#ff3300')
+    car_group.add(car_body)
     
-    for i, contrib in enumerate(display_contribs):
-        point_index = (len(track_points) - len(display_contribs) + i) % len(track_points)
-        x, y, angle = track_points[point_index]
-        
-        # Scale car size by contribution
-        car_size = 6 + (contrib['count'] * 2 if contrib['count'] < 5 else 10)
-        
-        # Opacity based on recency (more recent = more opaque)
-        opacity = 0.3 + (i / len(display_contribs)) * 0.7
-        
-        # Create car with current position
-        if i == len(display_contribs) - 1:  # Most recent contribution = main car
-            car = car_path(x, y, car_size, angle + np.pi/2)
-            dwg.add(car)
-        else:  # Ghost trail
-            ghost_car = car_path(x, y, car_size * 0.8, angle + np.pi/2)
-            ghost_car.attribs['opacity'] = str(opacity * 0.5)
-            dwg.add(ghost_car)
+    # Wheels
+    wheel_size = car_size/3
+    car_group.add(dwg.rect((-car_size+wheel_size/2, -car_size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+    car_group.add(dwg.rect((car_size-wheel_size*1.5, -car_size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+    car_group.add(dwg.rect((-car_size+wheel_size/2, car_size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+    car_group.add(dwg.rect((car_size-wheel_size*1.5, car_size/2-wheel_size/2), (wheel_size, wheel_size), fill='#111'))
+    
+    # Windshield
+    car_group.add(dwg.polygon(points=[(0, -car_size/2), (car_size/2, -car_size/4), 
+                                   (car_size/2, car_size/4), (0, car_size/2)], 
+                             fill='#66ccff'))
+    
+    # Add car to SVG
+    dwg.add(car_group)
+    
+    # Create path for animation
+    # Define elliptical path for car to follow
+    ellipse_cx = width/2
+    ellipse_cy = height/2
+    ellipse_rx = track_width/2 - 20
+    ellipse_ry = track_height/2 - 20
+    
+    # Create a path for the car to follow
+    path = dwg.path(d=f"M {ellipse_cx + ellipse_rx} {ellipse_cy} " + 
+                    f"A {ellipse_rx} {ellipse_ry} 0 1 1 {ellipse_cx - ellipse_rx} {ellipse_cy} " +
+                    f"A {ellipse_rx} {ellipse_ry} 0 1 1 {ellipse_cx + ellipse_rx} {ellipse_cy}",
+                    id="track-path", stroke="none", fill="none")
+    dwg.add(path)
+    
+    # Create animation for car rotation
+    # This makes the car face the direction it's moving
+    rotate_anim = svgwrite.animate.AnimateTransform(
+        'transform', 'rotate',
+        from_='0 0 0', to_='360 0 0', 
+        dur='20s', repeatCount='indefinite'
+    )
+    
+    # Create animation for car movement along path
+    car_anim = svgwrite.animate.AnimateMotion(
+        path=f"M {ellipse_rx} 0 " + 
+            f"A {ellipse_rx} {ellipse_ry} 0 1 1 {-ellipse_rx} 0 " +
+            f"A {ellipse_rx} {ellipse_ry} 0 1 1 {ellipse_rx} 0",
+        dur='20s', repeatCount='indefinite',
+        rotate='auto-reverse'
+    )
+    
+    # Add animations to car
+    car_group.add(car_anim)
     
     # Add start/finish line
     finish_x = width/2 + (track_width/2 - 20)
@@ -210,21 +212,21 @@ def create_dark_mode_version(input_path, output_path):
         f.write(dark_mode_svg)
 
 def main():
-    """Main function to generate race car animation"""
-    print(f"Generating race car animation for GitHub user: {GITHUB_USERNAME}")
+    """Main function to generate animated race car"""
+    print(f"Generating animated race car for GitHub user: {GITHUB_USERNAME}")
     
     # Get contribution data
     contributions = get_contributions()
     
-    # Create race track SVG
+    # Create animated race track SVG
     svg_path = os.path.join(OUTPUT_DIR, 'github-race-car.svg')
-    create_racetrack(contributions, svg_path)
+    create_animated_racetrack(contributions, svg_path)
     
     # Create dark mode version
     dark_svg_path = os.path.join(OUTPUT_DIR, 'github-race-car-dark.svg')
     create_dark_mode_version(svg_path, dark_svg_path)
     
-    print(f"Generated race car animations at {OUTPUT_DIR}")
+    print(f"Generated animated race car at {OUTPUT_DIR}")
 
 if __name__ == "__main__":
     main()
