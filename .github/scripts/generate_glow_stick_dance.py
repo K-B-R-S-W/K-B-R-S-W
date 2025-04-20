@@ -203,18 +203,16 @@ def create_glow_stick_dance(contributions, output_path):
     # Create multiple dancing figures based on contribution data
     glow_colors = ['#00FFFF', '#00FF00', '#FF00FF', '#0099FF', '#FFFF00']
     
-    # Get number of figures based on contributions
-    num_figures = min(5, max(2, sum(1 for c in recent_contributions if c['count'] > 0) // 6))
+    # Fixed number of figures
+    num_figures = 5
     
     for i in range(num_figures):
         # Distribute figures evenly
         x_pos = width * (i + 1) / (num_figures + 1)
         y_pos = height / 2.5
         
-        # Size based on recent activity
-        base_size = 80
-        size_boost = sum(c['count'] for c in recent_contributions[-7:]) / max(1, max_contributions) * 20
-        figure_size = base_size + size_boost
+        # Fixed size for all figures
+        figure_size = 80
         
         # Different phase for each figure
         dab_phase = (i / num_figures + 0.2) % 1.0
@@ -224,37 +222,6 @@ def create_glow_stick_dance(contributions, output_path):
         figure = create_glow_figure(x_pos, y_pos, figure_size, color, dab_phase)
         dwg.add(figure)
     
-    # Add contribution stats
-    stats_text = f"Total Contributions: {sum(c['count'] for c in recent_contributions)}"
-    stats = dwg.text(stats_text, insert=(width/2, height-40), 
-                     fill='#FFFFFF', font_size='14px', 
-                     text_anchor='middle')
-    stats.attribs["filter"] = "url(#glow_FFFFFF)"
-    dwg.add(stats)
-    
-    # Add watermark with username
-    title_filter = dwg.defs.add(dwg.filter(id="glow_title"))
-    title_filter.feGaussianBlur(in_="SourceGraphic", stdDeviation="2")
-    title_filter.feComposite(in2="SourceGraphic", operator="over")
-    
-    title = dwg.text(f"@{GITHUB_USERNAME}'s Glow Stick Dance", 
-                    insert=(width/2, 30), 
-                    fill='#FFFFFF', 
-                    font_size='18px', 
-                    font_weight='bold',
-                    text_anchor='middle')
-    title.attribs["filter"] = "url(#glow_title)"
-    dwg.add(title)
-    
-    # Add current date
-    today = datetime.now().strftime("%Y-%m-%d")
-    date_text = dwg.text(f"Generated: {today}", 
-                    insert=(width-20, height-20), 
-                    fill='#AAAAAA', 
-                    font_size='10px',
-                    text_anchor='end')
-    dwg.add(date_text)
-    
     # Save the drawing
     dwg.save()
 
@@ -263,7 +230,7 @@ def create_light_mode_version(input_path, output_path):
     with open(input_path, 'r') as f:
         svg_content = f.read()
     
-    # Replace colors for light mode (keep dark background for glow effect)
+    # Keep dark background for glow effect in both modes
     light_mode_svg = svg_content
     
     with open(output_path, 'w') as f:
@@ -271,9 +238,9 @@ def create_light_mode_version(input_path, output_path):
 
 def main():
     """Main function to generate glow stick dance animation"""
-    print(f"Generating glow stick dance animation for GitHub user: {GITHUB_USERNAME}")
+    print(f"Generating glow stick dance animation")
     
-    # Get contribution data
+    # Get contribution data (still needed to initialize but not displayed)
     contributions = get_contributions()
     
     # Create glow stick dance SVG
