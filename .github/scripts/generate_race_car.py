@@ -3,14 +3,10 @@ import sys
 import json
 import requests
 import numpy as np
-import svgwrite
-from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
-import random
+from datetime import datetime
 
 # Configuration
-GITHUB_USERNAME = os.environ.get('GITHUB_USERNAME')
+GITHUB_USERNAME = os.environ.get('GITHUB_USERNAME', 'K-B-R-S-W')  # Default value for testing
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
 OUTPUT_DIR = 'dist'
 
@@ -71,67 +67,73 @@ def get_contributions():
 def create_animated_racetrack(contributions, output_path):
     """Create an animated race track SVG with car based on contribution data"""
     # Determine the dimensions
-    width = 1000
+    width = 800
     height = 400
     
     # Calculate contribution stats
     recent_contributions = contributions[-364:] if len(contributions) > 364 else contributions
     total_contribs = sum(c['count'] for c in recent_contributions)
     
-    # Create SVG manually (bypassing svgwrite's animation limitations)
-    # Start with the SVG header
-    svg_content = f'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <rect x="0" y="0" width="{width}" height="{height}" fill="#0d1117"/>
+    # Track dimensions
+    track_width = width - 100
+    track_height = height - 100
+    cx = width / 2
+    cy = height / 2
     
-    <!-- Track outline -->
-    <ellipse cx="{width/2}" cy="{height/2}" rx="{(width-200)/2}" ry="{(height-200)/2}" fill="#333333"/>
+    # Create SVG with SMIL animation
+    svg_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="{width}" height="{height}" fill="#0d1117"/>
     
-    <!-- Inner track -->
-    <ellipse cx="{width/2}" cy="{height/2}" rx="{(width-200)/2 - 40}" ry="{(height-200)/2 - 40}" fill="#264026"/>
+    <!-- Track -->
+    <ellipse cx="{cx}" cy="{cy}" rx="{track_width/2}" ry="{track_height/2}" fill="#333333"/>
+    <ellipse cx="{cx}" cy="{cy}" rx="{track_width/2 - 30}" ry="{track_height/2 - 30}" fill="#264026"/>
     
-    <!-- Start/finish line -->
-    <line x1="{width/2 + (width-200)/2 - 35}" y1="{height/2 - 10}" x2="{width/2 + (width-200)/2 - 5}" y2="{height/2 + 10}" stroke="#ffffff" stroke-width="3"/>
-    <line x1="{width/2 + (width-200)/2 - 5}" y1="{height/2 - 10}" x2="{width/2 + (width-200)/2 - 35}" y2="{height/2 + 10}" stroke="#ffffff" stroke-width="3"/>
+    <!-- Finish line -->
+    <line x1="{cx + track_width/2 - 20}" y1="{cy - 15}" x2="{cx + track_width/2 - 20}" y2="{cy + 15}" stroke="#ffffff" stroke-width="4"/>
     
-    <!-- Path for car to follow (invisible) -->
-    <path id="carPath" d="M {width/2 + (width-200)/2 - 20} {height/2} 
-                A {(width-200)/2 - 20} {(height-200)/2 - 20} 0 1 1 {width/2 - (width-200)/2 + 20} {height/2}
-                A {(width-200)/2 - 20} {(height-200)/2 - 20} 0 1 1 {width/2 + (width-200)/2 - 20} {height/2}"
-          fill="none" stroke="none"/>
-    
-    <!-- Race car -->
-    <g id="raceCar">
+    <!-- Car with animation -->
+    <g>
         <!-- Car body -->
-        <rect x="-12" y="-6" width="24" height="12" rx="3" fill="#ff3300"/>
-        <!-- Wheels -->
-        <rect x="-10" y="-8" width="4" height="4" fill="#111111"/>
-        <rect x="6" y="-8" width="4" height="4" fill="#111111"/>
-        <rect x="-10" y="4" width="4" height="4" fill="#111111"/>
-        <rect x="6" y="4" width="4" height="4" fill="#111111"/>
-        <!-- Windshield -->
-        <polygon points="0,-6 6,-3 6,3 0,6" fill="#66ccff"/>
-        
-        <!-- Animation -->
-        <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
-            <mpath xlink:href="#carPath"/>
-        </animateMotion>
+        <rect width="30" height="15" rx="3" fill="#ff3300">
+            <!-- Animation along elliptical path -->
+            <animateTransform
+                attributeName="transform"
+                type="rotate"
+                from="0 {cx} {cy}"
+                to="360 {cx} {cy}"
+                dur="8s"
+                repeatCount="indefinite"/>
+            <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="{cx + track_width/2 - 40},{cy}; {cx},{cy - track_height/2 + 40}; {cx - track_width/2 + 40},{cy}; {cx},{cy + track_height/2 - 40}; {cx + track_width/2 - 40},{cy}"
+                dur="8s"
+                repeatCount="indefinite"
+                additive="sum"/>
+        </rect>
     </g>
     
-    <!-- Stats text -->
-    <text x="{width/2}" y="{height-40}" fill="#ffffff" font-size="14px" text-anchor="middle">Total Contributions: {total_contribs}</text>
+    <!-- Stats -->
+    <text x="{cx}" y="{height-30}" fill="#ffffff" font-size="16px" text-anchor="middle">
+        Total Contributions: {total_contribs}
+    </text>
     
-    <!-- Watermark -->
-    <text x="{width/2}" y="30" fill="#ffffff" font-size="18px" font-weight="bold" text-anchor="middle">@{GITHUB_USERNAME}'s Racing Contributions</text>
+    <!-- Title -->
+    <text x="{cx}" y="30" fill="#ffffff" font-size="18px" font-weight="bold" text-anchor="middle">
+        @{GITHUB_USERNAME}'s Racing Contributions
+    </text>
     
-    <!-- Generation date -->
-    <text x="{width-20}" y="{height-20}" fill="#aaaaaa" font-size="10px" text-anchor="end">Generated: {datetime.now().strftime("%Y-%m-%d")}</text>
-</svg>'''
+    <!-- Date -->
+    <text x="{width-20}" y="{height-10}" fill="#aaaaaa" font-size="10px" text-anchor="end">
+        Generated: {datetime.now().strftime("%Y-%m-%d")}
+    </text>
+</svg>"""
     
     # Write the SVG file
     with open(output_path, 'w') as f:
         f.write(svg_content)
-
 
 def create_dark_mode_version(input_path, output_path):
     """Create a dark mode version of the SVG"""
