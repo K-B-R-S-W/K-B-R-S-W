@@ -92,9 +92,9 @@ def create_animated_glow_stick_dance(output_path):
         glow_filter.feComposite(in2="SourceGraphic", operator="over")
     
     # Function to create animated glow stick figure
-    def create_animated_dab_figure(x, y, size, color, delay):
-        """Create a glowing stick figure with animated dab movements"""
-        color_code = color.replace('#', '')
+    def create_animated_dab_figure(x, y, size, body_color, delay):
+        """Create a glowing stick figure with animated dab movements and different colored hands"""
+        color_code = body_color.replace('#', '')
         group_id = f"figure_{color_code}_{int(x)}_{int(y)}"
         figure = dwg.g(id=group_id)
         
@@ -103,20 +103,25 @@ def create_animated_glow_stick_dance(output_path):
         body_length = size * 0.6
         limb_length = size * 0.4
         
+        # Select different colors for hands - different from body color
+        available_colors = [c for c in glow_colors if c != body_color]
+        hands_color = random.choice(available_colors)
+        hands_color_code = hands_color.replace('#', '')
+        
         # Head
         head = dwg.circle(center=(x, y), r=head_radius, fill="none", 
-                          stroke=color, stroke_width=size/10,
+                          stroke=body_color, stroke_width=size/10,
                           filter=f"url(#glow_{color_code})")
         figure.add(head)
         
         # Body (using path instead of line for animation)
         body_path = dwg.path(
             d=f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}",
-            stroke=color, stroke_width=size/10,
+            stroke=body_color, stroke_width=size/10,
             filter=f"url(#glow_{color_code})"
         )
         
-        # Add animation to body path with plain animate - FIXED FORMAT
+        # Add animation to body path with plain animate - FIXED FORMAT and FASTER
         body_anim = dwg.animate(
             attributeName="d",
             values=";".join([
@@ -126,83 +131,137 @@ def create_animated_glow_stick_dance(output_path):
                 f"M{x+5},{y + head_radius} L{x+3},{y + head_radius + body_length}",
                 f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}"
             ]),
-            dur="3s",
+            dur="1.5s",  # Faster animation (was 3s)
             repeatCount="indefinite",
             begin=f"{delay}s"
         )
         body_path.add(body_anim)
         figure.add(body_path)
         
-        # Left arm
-        left_arm_path = dwg.path(
-            d=f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}",
-            stroke=color, stroke_width=size/10,
+        # Left arm base (body color)
+        left_arm_base_path = dwg.path(
+            d=f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.4},{y + head_radius + limb_length * 0.3}",
+            stroke=body_color, stroke_width=size/10,
             filter=f"url(#glow_{color_code})"
         )
         
-        # Left arm animation - for dabbing motion - FIXED FORMAT
-        left_arm_anim = dwg.animate(
+        # Left arm base animation - FIXED FORMAT and FASTER
+        left_arm_base_anim = dwg.animate(
             attributeName="d",
             values=";".join([
-                f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}",
-                f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.8},{y + head_radius + limb_length * 0.8}",
-                f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}"
+                f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.4},{y + head_radius + limb_length * 0.3}",
+                f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.4},{y + head_radius + limb_length * 0.4}",
+                f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.4},{y + head_radius + limb_length * 0.3}"
             ]),
-            dur="3s",
+            dur="1.5s",  # Faster animation (was 3s)
             repeatCount="indefinite",
             begin=f"{delay}s"
         )
         
-        left_arm_path.add(left_arm_anim)
-        figure.add(left_arm_path)
+        left_arm_base_path.add(left_arm_base_anim)
+        figure.add(left_arm_base_path)
         
-        # Right arm - for dabbing position
-        right_arm_path = dwg.path(
-            d=f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}",
-            stroke=color, stroke_width=size/10,
+        # Left hand (different color)
+        left_hand_path = dwg.path(
+            d=f"M{x - limb_length * 0.4},{y + head_radius + limb_length * 0.3} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}",
+            stroke=hands_color, stroke_width=size/10,
+            filter=f"url(#glow_{hands_color_code})"
+        )
+        
+        # Left hand animation - FIXED FORMAT and FASTER
+        left_hand_anim = dwg.animate(
+            attributeName="d",
+            values=";".join([
+                f"M{x - limb_length * 0.4},{y + head_radius + limb_length * 0.3} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}",
+                f"M{x - limb_length * 0.4},{y + head_radius + limb_length * 0.4} L{x - limb_length * 0.8},{y + head_radius + limb_length * 0.8}",
+                f"M{x - limb_length * 0.4},{y + head_radius + limb_length * 0.3} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}"
+            ]),
+            dur="1.5s",  # Faster animation (was 3s)
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        
+        left_hand_path.add(left_hand_anim)
+        figure.add(left_hand_path)
+        
+        # Right arm base (body color)
+        right_arm_base_path = dwg.path(
+            d=f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.3},{y + head_radius - limb_length * 0.1}",
+            stroke=body_color, stroke_width=size/10,
             filter=f"url(#glow_{color_code})"
         )
         
-        # Right arm animation - dab motion - FIXED FORMAT
-        right_arm_anim = dwg.animate(
+        # Right arm base animation - FIXED FORMAT and FASTER
+        right_arm_base_anim = dwg.animate(
             attributeName="d",
             values=";".join([
                 # Regular position
-                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}",
+                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.3},{y + head_radius - limb_length * 0.1}",
                 
-                # Dab position - arm across face
-                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.5},{y - limb_length * 0.5}",
+                # Dab position - arm moving up
+                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.3},{y - limb_length * 0.3}",
                 
                 # Back to slightly different position
-                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.6},{y + head_radius - limb_length * 0.1}",
+                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.3},{y + head_radius - limb_length * 0.05}",
                 
                 # Regular position again
-                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}"
+                f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.3},{y + head_radius - limb_length * 0.1}"
             ]),
-            dur="3s",
+            dur="1.5s",  # Faster animation (was 3s)
             repeatCount="indefinite",
             begin=f"{delay}s"
         )
         
-        right_arm_path.add(right_arm_anim)
-        figure.add(right_arm_path)
+        right_arm_base_path.add(right_arm_base_anim)
+        figure.add(right_arm_base_path)
+        
+        # Right hand (different color)
+        right_hand_path = dwg.path(
+            d=f"M{x + limb_length * 0.3},{y + head_radius - limb_length * 0.1} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}",
+            stroke=hands_color, stroke_width=size/10,
+            filter=f"url(#glow_{hands_color_code})"
+        )
+        
+        # Right hand animation - FIXED FORMAT and FASTER
+        right_hand_anim = dwg.animate(
+            attributeName="d",
+            values=";".join([
+                # Regular position
+                f"M{x + limb_length * 0.3},{y + head_radius - limb_length * 0.1} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}",
+                
+                # Dab position - hand across face
+                f"M{x + limb_length * 0.3},{y - limb_length * 0.3} L{x + limb_length * 0.5},{y - limb_length * 0.5}",
+                
+                # Back to slightly different position
+                f"M{x + limb_length * 0.3},{y + head_radius - limb_length * 0.05} L{x + limb_length * 0.6},{y + head_radius - limb_length * 0.1}",
+                
+                # Regular position again
+                f"M{x + limb_length * 0.3},{y + head_radius - limb_length * 0.1} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}"
+            ]),
+            dur="1.5s",  # Faster animation (was 3s)
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        
+        right_hand_path.add(right_hand_anim)
+        figure.add(right_hand_path)
         
         # Left leg (using path instead of line for animation)
         left_leg_path = dwg.path(
             d=f"M{x},{y + head_radius + body_length} L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length}",
-            stroke=color, stroke_width=size/10,
+            stroke=body_color, stroke_width=size/10,
             filter=f"url(#glow_{color_code})"
         )
         
-        # Add animation to left leg path - FIXED FORMAT
+        # Add animation to left leg path - FIXED FORMAT and FASTER
         left_leg_anim = dwg.animate(
             attributeName="d",
             values=";".join([
                 f"M{x},{y + head_radius + body_length} L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length}",
-                f"M{x},{y + head_radius + body_length} L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length - 5}",
+                f"M{x},{y + head_radius + body_length} L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length - 10}",
                 f"M{x},{y + head_radius + body_length} L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length}"
             ]),
-            dur="3s",
+            dur="1.5s",  # Faster animation (was 3s)
             repeatCount="indefinite",
             begin=f"{delay}s"
         )
@@ -212,19 +271,19 @@ def create_animated_glow_stick_dance(output_path):
         # Right leg (using path instead of line for animation)
         right_leg_path = dwg.path(
             d=f"M{x},{y + head_radius + body_length} L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length}",
-            stroke=color, stroke_width=size/10,
+            stroke=body_color, stroke_width=size/10,
             filter=f"url(#glow_{color_code})"
         )
         
-        # Add animation to right leg path - FIXED FORMAT
+        # Add animation to right leg path - FIXED FORMAT and FASTER
         right_leg_anim = dwg.animate(
             attributeName="d",
             values=";".join([
                 f"M{x},{y + head_radius + body_length} L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length}",
-                f"M{x},{y + head_radius + body_length} L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length - 10}",
+                f"M{x},{y + head_radius + body_length} L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length - 15}",
                 f"M{x},{y + head_radius + body_length} L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length}"
             ]),
-            dur="3s",
+            dur="1.5s",  # Faster animation (was 3s)
             repeatCount="indefinite",
             begin=f"{delay}s"
         )
@@ -245,11 +304,11 @@ def create_animated_glow_stick_dance(output_path):
         figure_size = 80
         
         # Different animation delay for each figure to create varied motion
-        delay = i * 0.5
+        delay = i * 0.25  # Reduced delay for faster overall effect
         
         # Create figure with random glow color
-        color = random.choice(glow_colors)
-        figure = create_animated_dab_figure(x_pos, y_pos, figure_size, color, delay)
+        body_color = random.choice(glow_colors)
+        figure = create_animated_dab_figure(x_pos, y_pos, figure_size, body_color, delay)
         dwg.add(figure)
     
     # Save the drawing
