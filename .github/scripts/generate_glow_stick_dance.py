@@ -118,18 +118,18 @@ def create_animated_glow_stick_dance(output_path):
         
         # Add animation to body path with plain animate
         body_anim = dwg.animate(
-            attributeName="d",
-            values=(
-                f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}; "
-                f"M{x-5},{y + head_radius} L{x-3},{y + head_radius + body_length}; "
-                f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}; "
-                f"M{x+5},{y + head_radius} L{x+3},{y + head_radius + body_length}; "
-                f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}"
-            ),
-            dur="3s",
-            repeatCount="indefinite",
-            begin=f"{delay}s"
-        )
+        attributeName="d",
+        values=";".join([
+            f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}",
+            f"M{x-5},{y + head_radius} L{x-3},{y + head_radius + body_length}",
+            f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}",
+            f"M{x+5},{y + head_radius} L{x+3},{y + head_radius + body_length}",
+            f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}"
+        ]),
+        dur="3s",
+        repeatCount="indefinite",
+        begin=f"{delay}s"
+    )
         body_path.add(body_anim)
         figure.add(body_path)
         
