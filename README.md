@@ -10,6 +10,13 @@
 | ![](https://github-readme-stats.vercel.app/api/top-langs/?username=K-B-R-S-W&theme=radical) | |
 
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/menuka400/menuka400/output/github-race-car-dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/menuka400/menuka400/output/github-race-car.svg" />
+  <img alt="github-race-car" src="https://raw.githubusercontent.com/menuka400/menuka400/output/github-race-car.svg" />
+</picture>
+
+
 ## 🏆 GitHub Trophies
 ![](https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=radical&no-frame=false&no-bg=false&margin-w=4)
 
