@@ -117,18 +117,23 @@ def create_animated_glow_stick_dance(output_path):
                          stroke=color, stroke_width=size/10,
                          filter=f"url(#glow_{color_code})")
         
-        # Add animation to body - FIXED: Added transform parameter
-        body_anim = dwg.animateTransform(
-            transform="rotate",  # Add this line to fix the error
+        # Create a parent group for the body that we can rotate
+        body_group = dwg.g()
+        body_group.add(body)
+        
+        # Instead of using animateTransform, let's manually rotate the body with rotate transforms
+        body_rotate = dwg.animateTransform(
             attributeName="transform",
-            type="rotate",
-            values=f"0 {x} {y+head_radius}; 10 {x} {y+head_radius}; 0 {x} {y+head_radius}; -5 {x} {y+head_radius}; 0 {x} {y+head_radius}",
-            dur="3s",
+            type="rotate", 
+            from_=f"0 {x} {y+head_radius}",
+            to=f"10 {x} {y+head_radius}",
+            dur="1.5s",
             repeatCount="indefinite",
-            begin=f"{delay}s"
+            additive="sum"
         )
-        body.add(body_anim)
-        figure.add(body)
+        
+        body_group.add(body_rotate)
+        figure.add(body_group)
         
         # Left arm
         left_arm = dwg.line(start=(x, y + head_radius + size * 0.15),
@@ -282,7 +287,11 @@ def main():
     print("Generating animated glow stick dab dance")
     
     # Get contribution data (for workflow compatibility only)
-    get_contributions()
+    try:
+        get_contributions()
+    except Exception as e:
+        print(f"Warning: Could not fetch contributions data: {e}")
+        print("Continuing without contributions data...")
     
     # Create animated glow stick dance SVG
     svg_path = os.path.join(OUTPUT_DIR, 'github-glow-dance.svg')
