@@ -109,37 +109,36 @@ def create_animated_glow_stick_dance(output_path):
                           filter=f"url(#glow_{color_code})")
         figure.add(head)
         
-        # Create animation paths for different body parts
-        
-        # Body
-        body = dwg.line(start=(x, y + head_radius), 
-                         end=(x, y + head_radius + body_length),
-                         stroke=color, stroke_width=size/10,
-                         filter=f"url(#glow_{color_code})")
-        
-        # Create a parent group for the body that we can rotate
-        body_group = dwg.g()
-        body_group.add(body)
-        
-        # Instead of using animateTransform, let's manually rotate the body with rotate transforms
-        body_rotate = dwg.animateTransform(
-            attributeName="transform",
-            type="rotate", 
-            from_=f"0 {x} {y+head_radius}",
-            to=f"10 {x} {y+head_radius}",
-            dur="1.5s",
-            repeatCount="indefinite",
-            additive="sum"
+        # Body (using path instead of line for animation)
+        body_path = dwg.path(
+            d=f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}",
+            stroke=color, stroke_width=size/10,
+            filter=f"url(#glow_{color_code})"
         )
         
-        body_group.add(body_rotate)
-        figure.add(body_group)
+        # Add animation to body path with plain animate
+        body_anim = dwg.animate(
+            attributeName="d",
+            values=(
+                f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}; "
+                f"M{x-5},{y + head_radius} L{x-3},{y + head_radius + body_length}; "
+                f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}; "
+                f"M{x+5},{y + head_radius} L{x+3},{y + head_radius + body_length}; "
+                f"M{x},{y + head_radius} L{x},{y + head_radius + body_length}"
+            ),
+            dur="3s",
+            repeatCount="indefinite",
+            begin=f"{delay}s"
+        )
+        body_path.add(body_anim)
+        figure.add(body_path)
         
         # Left arm
-        left_arm = dwg.line(start=(x, y + head_radius + size * 0.15),
-                           end=(x - limb_length * 0.7, y + head_radius + limb_length * 0.5),
-                           stroke=color, stroke_width=size/10,
-                           filter=f"url(#glow_{color_code})")
+        left_arm_path = dwg.path(
+            d=f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}",
+            stroke=color, stroke_width=size/10,
+            filter=f"url(#glow_{color_code})"
+        )
         
         # Left arm animation - for dabbing motion
         left_arm_anim = dwg.animate(
@@ -159,18 +158,10 @@ def create_animated_glow_stick_dance(output_path):
             begin=f"{delay}s"
         )
         
-        # Convert line to path for animation
-        left_arm_path = dwg.path(
-            d=f"M{x},{y + head_radius + size * 0.15} L{x - limb_length * 0.7},{y + head_radius + limb_length * 0.5}",
-            stroke=color, stroke_width=size/10,
-            filter=f"url(#glow_{color_code})"
-        )
-        
         left_arm_path.add(left_arm_anim)
         figure.add(left_arm_path)
         
-        # Right arm
-        # For the dabbing position, we'll animate this to go up to the head
+        # Right arm - for dabbing position
         right_arm_path = dwg.path(
             d=f"M{x},{y + head_radius + size * 0.15} L{x + limb_length * 0.5},{y + head_radius - limb_length * 0.2}",
             stroke=color, stroke_width=size/10,
@@ -205,51 +196,63 @@ def create_animated_glow_stick_dance(output_path):
         right_arm_path.add(right_arm_anim)
         figure.add(right_arm_path)
         
-        # Left leg
-        left_leg = dwg.line(start=(x, y + head_radius + body_length),
-                          end=(x - limb_length * 0.7, y + head_radius + body_length + limb_length),
-                          stroke=color, stroke_width=size/10,
-                          filter=f"url(#glow_{color_code})")
+        # Left leg (using path instead of line for animation)
+        left_leg_path = dwg.path(
+            d=f"M{x},{y + head_radius + body_length} L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length}",
+            stroke=color, stroke_width=size/10,
+            filter=f"url(#glow_{color_code})"
+        )
         
-        # Add small animation to left leg for bounce effect
+        # Add animation to left leg path
         left_leg_anim = dwg.animate(
-            attributeName="y2",
+            attributeName="d",
             values=(
-                f"{y + head_radius + body_length + limb_length}; "
-                f"{y + head_radius + body_length + limb_length - 5}; "
-                f"{y + head_radius + body_length + limb_length}"
+                f"M{x},{y + head_radius + body_length} "
+                f"L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length}; "
+                
+                f"M{x},{y + head_radius + body_length} "
+                f"L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length - 5}; "
+                
+                f"M{x},{y + head_radius + body_length} "
+                f"L{x - limb_length * 0.7},{y + head_radius + body_length + limb_length}"
             ),
             dur="3s",
             repeatCount="indefinite",
             begin=f"{delay}s"
         )
-        left_leg.add(left_leg_anim)
-        figure.add(left_leg)
+        left_leg_path.add(left_leg_anim)
+        figure.add(left_leg_path)
         
-        # Right leg
-        right_leg = dwg.line(start=(x, y + head_radius + body_length),
-                           end=(x + limb_length * 0.7, y + head_radius + body_length + limb_length),
-                           stroke=color, stroke_width=size/10,
-                           filter=f"url(#glow_{color_code})")
+        # Right leg (using path instead of line for animation)
+        right_leg_path = dwg.path(
+            d=f"M{x},{y + head_radius + body_length} L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length}",
+            stroke=color, stroke_width=size/10,
+            filter=f"url(#glow_{color_code})"
+        )
         
-        # Add small animation to right leg for bounce effect
+        # Add animation to right leg path
         right_leg_anim = dwg.animate(
-            attributeName="y2",
+            attributeName="d",
             values=(
-                f"{y + head_radius + body_length + limb_length}; "
-                f"{y + head_radius + body_length + limb_length - 10}; "
-                f"{y + head_radius + body_length + limb_length}"
+                f"M{x},{y + head_radius + body_length} "
+                f"L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length}; "
+                
+                f"M{x},{y + head_radius + body_length} "
+                f"L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length - 10}; "
+                
+                f"M{x},{y + head_radius + body_length} "
+                f"L{x + limb_length * 0.7},{y + head_radius + body_length + limb_length}"
             ),
             dur="3s",
             repeatCount="indefinite",
             begin=f"{delay}s"
         )
-        right_leg.add(right_leg_anim)
-        figure.add(right_leg)
+        right_leg_path.add(right_leg_anim)
+        figure.add(right_leg_path)
         
         return figure
     
-    # Create 2 dancing figures (changed from 5 to 2)
+    # Create 2 dancing figures
     num_figures = 2
     
     for i in range(num_figures):
