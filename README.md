@@ -18,7 +18,7 @@
 
 
 ## 🏆 GitHub Trophies
-![](https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=radical&no-frame=false&no-bg=false&margin-w=4)
+![](https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=matrix&no-frame=false&no-bg=false&margin-w=4&title=Commits,Experience,Stars,Issues,PullRequest,Repositories)
 
 
 ## 🌐 Socials:
