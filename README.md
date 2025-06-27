@@ -1,13 +1,43 @@
 <h1 align="center">Hey there!😎 I'm Ravindu Sankalpa</h1>
+
+<div align="center">
+  <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTMwaGVteHB4Ym51cXN0OWV2dG0zdmplMWViZDU0ZzBycW9saW16biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/jY1r8EHyk4Ye9KUOUb/giphy.gif?cid=ecf05e477s4qfss77gnn1sds6tepri7zctvhvls59kg7t6u3&ep=v1_stickers_search&rid=giphy.gif&ct=s" width="500">
+</div>
+
 <h3>I'm an AI Engineer at SLT, where I dive deep into the world of intelligent systems and machine learning every day 🤖. My journey is fueled by a strong curiosity for AI, ML and Data Science and I thrive on solving real world problems through innovative tech solutions 🚀.</h3>
 
-<h3>With hands on experience in building smart systems and a constant drive to learn, I'm always exploring the latest advancements in the AI space 🌐. Whether it’s designing models, optimizing algorithms or experimenting with new tools — I’m all in!✨</h3>
+<h3>With hands on experience in building smart systems and a constant drive to learn, I'm always exploring the latest advancements in the AI space 🌐. Whether it’s designing models, optimizing algorithms or experimenting with new tools - I’m all in!✨</h3>
 
 
-## 📊 GitHub Stats:
-| ![](https://github-readme-stats.vercel.app/api?username=K-B-R-S-W&theme=radical&hide_border=false&include_all_commits=true&count_private=true) | ![](https://github-readme-streak-stats.herokuapp.com/?user=K-B-R-S-W&theme=radical&hide_border=false) |
-| --- | --- |
-| ![](https://github-readme-stats.vercel.app/api/top-langs/?username=K-B-R-S-W&theme=radical) | |
+<h1 align="center">
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2VxazY5d3p2eGZ5b3ByczQxMWNjYWwxZzF3ZzJ1ZHQzcDYxODBwYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/AynUwd5uKhIevEWx54/giphy.gif" width="30px"/>
+  GitHub Stats
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2VxazY5d3p2eGZ5b3ByczQxMWNjYWwxZzF3ZzJ1ZHQzcDYxODBwYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/AynUwd5uKhIevEWx54/giphy.gif" width="30px"/>
+</h1>
+
+<div align="center">
+
+  ![GitHub Stats](https://github-readme-stats.vercel.app/api?username=K-B-R-S-W&theme=radical&hide_border=false&include_all_commits=true&count_private=true)
+
+
+
+<div align="center">
+  <img src="https://media2.giphy.com/media/VdXrFYcOikVGDe1bj4/giphy.gif" width="1000">
+</div>
+
+
+
+<h1 align="center">
+  <img src="https://media.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="25" />
+   Programming Languages
+  <img src="https://media.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="25" />
+</h1>
+
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=K-B-R-S-W&theme=radical)
+
+
+</div>
+
 
 
 <picture>
@@ -17,19 +47,26 @@
 </picture>
 
 
-## 🏆 GitHub Trophies
-![](https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=matrix&no-frame=false&no-bg=false&margin-w=4&title=Commits,Experience,Stars,Issues,PullRequest,Repositories)
+<h1 align="center">
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHBha3hoaDY2a2JjMDE3cjZwdHk2azNycmtzZDRjaHBjY3dnb3hvcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/AsmtNrrJwzCxsVh7fx/giphy.gif" width="30px"/>
+  GitHub Trophies
+  <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHBha3hoaDY2a2JjMDE3cjZwdHk2azNycmtzZDRjaHBjY3dnb3hvcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/AsmtNrrJwzCxsVh7fx/giphy.gif" width="30px"/>
+</h1>
+<p align="center">
+  <img 
+    src="https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=matrix&row=1&column=6&margin-w=10&title=Commits,Issues,PullRequest,Repositories,Stars,Experience" 
+    width="100%"
+  >
+</p>
 
 
-## 🌐 Socials:
-[![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?logo=Facebook&logoColor=white)](https://www.facebook.com/profile.php?id=100009831995174)
-[![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?logo=Instagram&logoColor=white)](https://www.instagram.com/_.ravi.yaa.x._/)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ravindusankalpa/)
-[![Twitch](https://img.shields.io/badge/Twitch-%239146FF.svg?logo=Twitch&logoColor=white)](https://www.twitch.tv/deathsec_sl_)
-[![X](https://img.shields.io/badge/X-black.svg?logo=X&logoColor=white)](https://x.com/Ravindumadara56)
-  
+<h1>
+<div align="center">
 
-## ⚙️ Tech Stack & Tools
+<img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXM5MDN4amVzamM3c3VzZDQ0NTlrNTJsODVrYXdjNTU4bTA4czY4ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QssRqdp4BgLk8GMKiu/giphy.gif" width="30"/>
+Tech Stack & Tools
+<img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXM5MDN4amVzamM3c3VzZDQ0NTlrNTJsODVrYXdjNTU4bTA4czY4ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QssRqdp4BgLk8GMKiu/giphy.gif" width="30"/>
+</h1>
 
 ##### 👨‍💻 Languages
 ![Python](https://img.shields.io/badge/Python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
@@ -119,3 +156,29 @@
 ##### 🔧 Hardware
 ![NVIDIA](https://img.shields.io/badge/NVIDIA-76B900?style=for-the-badge&logo=nvidia&logoColor=white)
 ![AMD](https://img.shields.io/badge/AMD-ED1C24?style=for-the-badge&logo=amd&logoColor=white)
+
+</div>
+
+<h1 align="center">
+  <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHl0dmxmbXRrNnE5cHc1ZmI1cTl5c2l1M3M1cGxsamg5dTR4OW5yaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/1ZnC6WWOraXN3tBLpB/giphy.gif" width="80" />
+  Find Me Here
+  <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHl0dmxmbXRrNnE5cHc1ZmI1cTl5c2l1M3M1cGxsamg5dTR4OW5yaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/1ZnC6WWOraXN3tBLpB/giphy.gif" width="80" />
+</h1>
+
+<p align="center">
+  <a href="https://www.facebook.com/profile.php?id=100009831995174">
+    <img src="https://img.shields.io/badge/Facebook-%231877F2.svg?logo=Facebook&logoColor=white" alt="Facebook"/>
+  </a>
+  <a href="https://www.instagram.com/_.ravi.yaa.x._/">
+    <img src="https://img.shields.io/badge/Instagram-%23E4405F.svg?logo=Instagram&logoColor=white" alt="Instagram"/>
+  </a>
+  <a href="https://www.linkedin.com/in/ravindusankalpa/">
+    <img src="https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white" alt="LinkedIn"/>
+  </a>
+  <a href="https://www.twitch.tv/deathsec_sl_">
+    <img src="https://img.shields.io/badge/Twitch-%239146FF.svg?logo=Twitch&logoColor=white" alt="Twitch"/>
+  </a>
+  <a href="https://x.com/Ravindumadara56">
+    <img src="https://img.shields.io/badge/X-black.svg?logo=X&logoColor=white" alt="X"/>
+  </a>
+</p>
