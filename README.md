@@ -6,7 +6,7 @@
 
 <h3>I'm an AI Engineer at SLT, where I dive deep into the world of intelligent systems and machine learning every day 🤖. My journey is fueled by a strong curiosity for AI, ML and Data Science and I thrive on solving real world problems through innovative tech solutions 🚀.</h3>
 
-<h3>With hands on experience in building smart systems and a constant drive to learn, I'm always exploring the latest advancements in the AI space 🌐. Whether it’s designing models, optimizing algorithms or experimenting with new tools - I’m all in!✨</h3>
+<h3>With hands on experience in building smart systems and a constant drive to learn, I'm always exploring the latest advancements in the AI space. Whether it’s designing models, optimizing algorithms or experimenting with new tools - I’m all in!✨</h3>
 
 
 <h1 align="center">
