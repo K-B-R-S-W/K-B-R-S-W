@@ -160,6 +160,16 @@ Tech Stack & Tools
 
 </div>
 
+
+<div align="center">
+
+# 💡 Deep Learning With Deep Thoughts
+
+<img width="700" height="250" alt="Deep Learning Deep Thoughts Banner" src="https://github.com/user-attachments/assets/beb2a901-79d8-4cf3-bd0e-1118d397c80c" />
+
+</div>
+
+
 <h1 align="center">
   <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExaHl0dmxmbXRrNnE5cHc1ZmI1cTl5c2l1M3M1cGxsamg5dTR4OW5yaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/1ZnC6WWOraXN3tBLpB/giphy.gif" width="80" />
   Find Me Here
