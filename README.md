@@ -56,6 +56,7 @@
   <img 
     src="https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=matrix&row=1&column=6&margin-w=10&title=MultiLanguage,Commits,PullRequest,Repositories,Stars,Experience"
     alt="GitHub Trophies"
+    width="90%"
   />
 </p>
 
