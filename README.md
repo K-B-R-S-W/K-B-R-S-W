@@ -54,9 +54,9 @@
 </h1>
 <p align="center">
   <img 
-    src="https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=matrix&row=1&column=7&margin-w=10&title=MultiLanguage,Commits,PullRequest,Repositories,Stars,Experience"
-    width="100%"
-  >
+    src="https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=matrix&row=1&column=6&margin-w=10&title=MultiLanguage,Commits,PullRequest,Repositories,Stars,Experience"
+    alt="GitHub Trophies"
+  />
 </p>
 
 
