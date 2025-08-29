@@ -4,7 +4,7 @@
   <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTMwaGVteHB4Ym51cXN0OWV2dG0zdmplMWViZDU0ZzBycW9saW16biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/jY1r8EHyk4Ye9KUOUb/giphy.gif?cid=ecf05e477s4qfss77gnn1sds6tepri7zctvhvls59kg7t6u3&ep=v1_stickers_search&rid=giphy.gif&ct=s" width="500">
 </div>
 
-<h3>I'm an AI Engineer at SLT, where I dive deep into the world of intelligent systems and machine learning every day 🤖. My journey is fueled by a strong curiosity for AI, ML and Data Science and I thrive on solving real world problems through innovative tech solutions 🚀.</h3>
+<h3>I'm an AI Engineer at SLT, where I dive deep into the world of intelligent systems and machine learning every day 🤖. My journey is fueled by a strong curiosity for AI, ML and Data Science and I thrive on solving real world problems through innovative tech solutions🚀.</h3>
 
 <h3>With hands on experience in building smart systems and a constant drive to learn, I'm always exploring the latest advancements in the AI space. Whether it’s designing models, optimizing algorithms or experimenting with new tools - I’m all in!✨</h3>
 
