@@ -33,7 +33,7 @@
   <img src="https://media.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="25" />
 </h1>
 
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=K-B-R-S-W&theme=radical)
+![Top Languages](https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=K-B-R-S-W&theme=radical)
 
 
 </div>
@@ -54,7 +54,7 @@
 </h1>
 <p align="center">
   <img 
-    src="https://github-profile-trophy.vercel.app/?username=K-B-R-S-W&theme=matrix&row=1&column=6&margin-w=10&title=MultiLanguage,Commits,PullRequest,Repositories,Stars,Experience"
+    src="https://github-trophies.vercel.app/?username=K-B-R-S-W&theme=matrix&row=1&column=5&margin-w=10&title=MultiLanguage,Commits,PullRequest,Repositories,Stars,Experience"
     alt="GitHub Trophies"
     width="90%"
   />
