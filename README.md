@@ -17,7 +17,7 @@
 
 <div align="center">
 
-  ![GitHub Stats](https://github-readme-stats.vercel.app/api?username=K-B-R-S-W&theme=radical)
+  ![GitHub Stats](https://github-stats-extended.vercel.app/api?username=K-B-R-S-W&theme=radical)
 
 
 
